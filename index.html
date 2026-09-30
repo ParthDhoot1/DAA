@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f4f1ea" id="themeColorMeta" />
+  <script>
+    try {
+      const savedTheme = localStorage.getItem('sortlab-theme');
+      const theme = savedTheme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      if (theme === 'dark') document.documentElement.dataset.theme = 'dark';
+    } catch (_) {
+      if (matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.dataset.theme = 'dark';
+    }
+  </script>
+  <title>Sort Lab — Sorting trace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="wordmark" href="#workspace" aria-label="Sort Lab"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 13h3l2-7 4 13 3-10 2 4h6"/></svg><span>sort<span class="wordmark-light">lab</span></span></a>
+      <div class="top-context"><span class="context-dot"></span> SORT LAB <span class="slash">/</span> SORTING</div>
+      <div class="top-actions"><span class="saved-state">UNSAVED TRACE</span><button id="themeToggle" class="icon-button" aria-label="Switch to dark theme" aria-pressed="false" title="Switch color theme"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="M10 3a7 7 0 0 0 0 14z"/></svg></button></div>
+    </header>
+
+    <main id="workspace" class="workspace">
+      <aside class="panel pseudocode-panel" aria-label="Algorithm pseudocode">
+        <div class="panel-heading"><span class="eyebrow">PROCEDURE <span id="procedureNumber">01</span> / 06</span><span class="micro-label" id="algorithmFamily">COMPARISON</span></div>
+        <label class="algorithm-picker-label" for="algorithmSelect">ALGORITHM</label>
+        <select id="algorithmSelect" class="algorithm-picker" aria-label="Choose a sorting algorithm"></select>
+        <h1 class="algorithm-title" id="algorithmTitle">Bubble sort<span class="title-period">.</span></h1>
+        <p class="algorithm-summary" id="algorithmSummary">Repeatedly compare neighboring values. Move the larger value to the right.</p>
+        <div class="complexity-strip"><div><span class="micro-label">WORST</span><code id="worstComplexity">O(n²)</code></div><div><span class="micro-label">SPACE</span><code id="spaceComplexity">O(1)</code></div></div>
+        <div class="code-heading"><span class="micro-label">PSEUDOCODE</span><span class="code-language">ITERATIVE</span></div>
+        <div class="code-block" id="codeBlock" aria-label="Sorting pseudocode"></div>
+        <div class="loop-note"><svg class="note-mark" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3v5h9M9 5l3 3-3 3"/></svg><span id="algorithmNote">Each pass places one value in its final position. Stop when no swaps occur.</span></div>
+        <div class="panel-footnote"><span class="micro-label">INVARIANT</span><p id="algorithmInvariant">After pass <code>i</code>, the last <code>i</code> elements are sorted.</p></div>
+      </aside>
+
+      <section class="panel viz-panel" aria-label="Sorting visualization">
+        <div class="viz-header"><div><div class="eyebrow">LIVE TRACE <span class="slash">/</span> ARRAY</div><div class="array-meta"><span id="arrayMeta">16 ELEMENTS</span><span class="meta-separator">·</span><span>UNSIGNED INTEGER</span></div></div><div class="input-tools"><label class="preset-label" for="presetSelect">INPUT</label><select id="presetSelect" aria-label="Input preset"><option value="random">Random</option><option value="sorted">Sorted</option><option value="reversed">Reversed</option><option value="nearly">Nearly sorted</option><option value="few">Few unique</option></select><button id="shuffleBtn" class="outline-button"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h3l8 10h3M14 5h3v3M14 15h3v-3M3 15h3l3-4M11 9l3-4"/></svg> New input <kbd>R</kbd></button></div></div>
+        <div class="viz-stage" id="vizStage"><div class="stage-coordinate coordinate-top">ARRAY POSITION <span>→</span></div><div class="stage-coordinate coordinate-side">V A L U E</div><div class="chart-grid" id="chartGrid"></div><div class="run-boundaries" id="runBoundaries" aria-hidden="true"></div><div class="bars" id="bars" role="img" aria-label="Array of 16 values"></div><div class="bar-indices" id="barIndices"></div><div class="stage-axis"></div><div class="chart-callout" id="chartCallout">Ready to trace</div><div class="key-float" id="keyFloat" hidden></div></div>
+        <div class="legend"><span><i class="legend-swatch compare-swatch"></i>COMPARE</span><span><i class="legend-swatch swap-swatch"></i>WRITE</span><span><i class="legend-swatch inspect-swatch"></i>INSPECT / PIVOT</span><span><i class="legend-swatch sorted-swatch"></i>FINAL</span><span><i class="legend-swatch idle-swatch"></i>UNTOUCHED</span></div>
+        <div class="transport"><button class="transport-button" id="resetBtn" aria-label="Reset trace" title="Reset to start (Home)"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 8a6 6 0 1 1-.2 4M4 4v4h4"/></svg></button><button class="transport-button" id="prevBtn" aria-label="Previous step" title="Previous step (←)"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12 4-6 6 6 6"/></svg></button><button class="play-button" id="playBtn" aria-label="Play trace"><svg id="playIcon" viewBox="0 0 20 20" aria-hidden="true"><path d="m6 4 10 6-10 6z"/></svg><span id="playLabel">Run trace</span></button><button class="transport-button" id="nextBtn" aria-label="Next step" title="Next step (→)"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m8 4 6 6-6 6"/></svg></button><button class="transport-button" id="nextPassBtn" aria-label="Skip to next pass" title="Skip to next pass"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4v12l8-6zM14 4v12"/></svg></button><button class="transport-button" id="endBtn" aria-label="Skip to end" title="Skip to end"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4v12l8-6zM14 4v12M17 4v12"/></svg></button><div class="transport-divider"></div><button id="speedBtn" class="speed-button">1× <span>PACE</span></button><div class="transport-spacer"></div><span class="shortcut-hint"><kbd>SPACE</kbd> PLAY <kbd>R</kbd> NEW <kbd>HOME</kbd> RESET</span></div>
+        <div class="trace-scrubber"><label for="traceRange">STEP <span id="scrubStep">000</span></label><input id="traceRange" type="range" min="0" max="0" value="0" aria-label="Trace step" /></div>
+        <div class="array-control"><div class="size-label"><label for="sizeRange">INPUT SIZE <span id="sizeLabel">16</span></label><span class="range-min">8</span><span class="range-max">32</span></div><input id="sizeRange" type="range" min="8" max="32" value="16" aria-label="Input size" /></div>
+      </section>
+
+      <aside class="panel metrics-panel" aria-label="Run metrics and measurements">
+        <div class="panel-heading"><span class="eyebrow">MEASUREMENTS</span><span class="live-indicator"><i></i> LIVE</span></div>
+        <div class="metric-primary"><span class="micro-label" id="comparisonLabel">COMPARISONS</span><div class="metric-value" id="comparisonCount">00</div><div class="metric-unit" id="metricUnit">element pairs inspected</div></div>
+        <div class="metric-secondary"><div><span class="micro-label">WRITES</span><strong id="swapCount">00</strong></div><div><span class="micro-label" id="progressLabel">PASSES</span><strong id="passCount">00</strong></div></div>
+        <div class="chart-heading"><span class="micro-label" id="chartMetric">COMPARISONS / PASS</span><span class="chart-units">COUNT</span></div>
+        <div class="mini-chart-wrap"><svg id="miniChart" viewBox="0 0 250 106" role="img" aria-label="Operations by algorithm pass"><g class="chart-ticks"><line x1="28" y1="15" x2="244" y2="15"/><line x1="28" y1="50" x2="244" y2="50"/><line x1="28" y1="85" x2="244" y2="85"/></g><g class="chart-labels"><text x="2" y="18">16</text><text x="8" y="53">8</text><text x="14" y="88">0</text></g><polyline id="chartLine" points="28,85"/><g id="chartDots"></g></svg><div class="chart-x-labels"><span id="chartFirstPass">P01</span><span id="chartLastPass">P01</span></div><div id="chartEmpty" class="chart-empty">Measurements appear as the trace runs.</div></div>
+        <div class="result-row"><span class="micro-label">ARRAY STATE</span><span id="arrayState" class="state-label">NOT STARTED</span></div>
+        <div class="result-row"><span class="micro-label">EST. COMPLEXITY</span><code id="complexityValue">n²</code></div>
+        <div class="result-row"><span class="micro-label">PASS UNIT</span><span id="passDefinition" class="pass-definition"></span></div>
+        <div class="result-note"><span class="note-mark">i</span><span id="complexityNote">Best case improves to <code>O(n)</code> when the input is already sorted.</span></div>
+      </aside>
+    </main>
+
+    <footer class="statusbar"><div class="status-left"><span class="status-led" id="statusLed"></span><span id="statusText">READY</span><span class="status-divider">│</span><span id="statusDetail" aria-live="polite">Waiting for a trace</span></div><div class="status-center">STEP <span id="stepNumber">000</span><span class="status-divider">/</span><span id="totalSteps">000</span></div><div class="status-right"><span id="lineStatus">LINE —</span><span class="status-divider">│</span><span>UTF-8</span></div></footer>
+  </div>
+  <noscript><p class="noscript-message">Sort Lab needs JavaScript enabled to build and step through traces.</p></noscript>
+  <script src="sorts.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
